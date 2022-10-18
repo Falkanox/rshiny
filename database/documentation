@@ -12,6 +12,7 @@ Vous avez maintenant les 3 tables, vous pouvez enregistrer ce fichier en "databa
 
 Modifier les valeurs d'import des données, on va maintenant utiliser le package RSQLite pour utiliser des données d'une base de données. Ajouter les lignes :
 
+
 - db <- dbConnect(SQLite(), db = "database.db")
 - df <- dbGetQuery(db, "SELECT * FROM Films INNER JOIN Rating ON Films.id_rating = Rating.id_rating INNER JOIN liste ON Films.id_listed_in = liste.id_listed_in")
 
