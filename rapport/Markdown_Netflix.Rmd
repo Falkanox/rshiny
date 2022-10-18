@@ -1,0 +1,193 @@
+---
+title: "Markdown_Netflix"
+output:
+  html_document: default
+  word_document: default
+---
+
+#Problématique : Problématique : Est ce que le nombre des vues a une influence sur les notes ?
+
+#Avant tout installer le package/librairie : rmarkdown, shiny, shinydashboard, ggplot2, boot, cramer
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(shiny) #librarie de base
+library(shinydashboard) #librarie pour les dashboard (non utilisé)
+library(ggplot2)
+library(boot)
+library(cramer)
+
+```
+
+
+## Présentation du jeu de donné.
+je vais donc avant tous vous présentez mon jeu de donné.
+
+Notre jeu de donné est basé sur des données Netflix. Nous avons décomposé ces données en trois tables différentes.
+
+La table Films où on retrouve toutes les infos sur les films du catalogue Netflix comme :
+-title : titre des films 
+-film_id : l'id de chaque film 
+-type : si c'est un film ou une série (TV show) on retrouve dans cet attribut deux valeurs faussées : une vide et une noté "William Wyler". 
+-director : le nom des directeurs des films 
+-cast : le casting du film
+-country : le pays d'où viens le film
+-date_added : la date ou le films a été ajouté au catalogue Netflix -release_years : l'année de sortie du film 
+-duration : la durée du film/ nombre de saison pour les séries -marks : la note du film
+-view : le nombre de vu de chaque film 
+-Deux clés étrangères l'id rating ainsi que l'id de listed in.
+
+La table Rating, qui est composée de deux attributs: 
+Les différents types de rating ainsi que leur id correspondant. Les rating sont donc le type d'interdiction selon les films. 
+Nous y retrouvons les célèbres PG/TV-Age comme par exemple PG-13 qui veut donc dire interdit au moins de 13 ans. 
+Mais il existe d'autres rating moins connu comme : 
+-TV-MA (contenu destiné aux publics matures);TV-Y (un contenu qui convient aux enfants d'âge préscolaire)
+-TV-Y7 (un contenu pour les enfants âgés de 7 ans et plus.)
+-R (constitue un avertissement fort envers les parents d'enquêter plus en profondeur sur le contenu d'un film avant d'emmener leurs enfants les voir.)
+-G (Un film classé G, signifie qu'il est pour tous les âges.)
+-NC-17 (la note la plus élevée du système de classification des films, conseillé fortement pour les adultes) puis nous y retrouvons des rating qui n'ont pas de sens comme des durées ou encore UR qui est un rating d'URL et non de film nous avons tout de même décidé de ne pas modifier le fichier et donc de garder ces valeurs incohérentes.
+
+Et enfin la table liste ou on y retrouve : les différents thèmes ansi que leurs id correspondant.
+
+Pour vous expliquer les liens de nos tables voici un mcd de notre BDD: (modifier le lien avec l'emplacement du mcd)
+
+```{r setup1, include=TRUE}
+
+knitr::include_graphics("C:/Users/Lucas/OneDrive/Bureau/Projet Shiny/mcd netflix.PNG")
+
+```
+
+On peut donc bien mieux comprendre comment fonctionne notre MCD avec une table assez imposante "Films" qui est donc liée à la table rating et liste. On comprend donc que leur lien est fait grâce à leur id: 
+
+un film n'a qu'un seul rating et un rating peut avoir plusieur films
+un film n'a qu'un thème alors qu'un thème peut avoir plusieur films
+
+```{r setup2, include=TRUE}
+
+films <- read.csv(file = "Films.csv", sep = ";")
+summary(films)
+dim(x = films)
+colnames(x = films)
+
+```
+
+On retrouve ici toutes les informations concernant la table film.
+je vais me concentrer sur les attributs view et marks car ils sont directement liés à la problématique. Donc on comprend bien que ces deux attributs sont des entier "int". On retrouve d'ailleurs de nombreuses analyses faite sur leur chiffre mais nous en parlerons un peu plus tard.
+
+```{r setup3, include=TRUE}
+
+rating <- read.csv(file = "Rating.csv", sep = ";")
+summary(rating)
+dim(x = rating)
+colnames(x = rating)
+
+rating$id_rating <- factor(rating$id_rating)
+
+```
+
+On apprend ici que l'id_rating était un entier j'ai donc décidé de le mettre en
+factor même si nous allons pas l'utiliser pour résoudre notre problématique.
+
+```{r setup4, include=TRUE}
+
+liste <- read.csv(file = "liste.csv", sep = ";")
+summary(liste)
+dim(x = liste)
+colnames(x = liste)
+
+```
+
+On apprend ici que l'id_listed_in était un entier j'ai donc décidé de le mettre en factor même si nous allons pas l'utiliser pour résoudre notre problématique.
+
+
+## Statistiques univariées et bivariées.
+
+#Analyse Univariées.
+
+
+```{r setup5, include=TRUE}
+
+mean(films$marks, na.rm = TRUE)
+min(films$marks, na.rm = TRUE)
+max(films$marks, na.rm = TRUE)
+median(films$marks, na.rm = TRUE)
+var(films$marks, na.rm = TRUE)
+sd(films$marks, na.rm = TRUE)
+
+```
+
+Nous retrouvons ici toutes les statistiques intéressantes pour analyser la colonne marks. On y retrouve donc la moyenne qui est de 2,9 on comprend donc qu'il y a plus de films notés au-dessus de 2.5 on va d'ailleurs le confirmer grâce à la médiane qui est de 3. On retrouve bien sûr le min et le max qui sont de 0 pour le minimum et de 5 pour le maximum ce qui paraît cohérent.
+
+Nous trouvons ensuite la variance qui est supérieure à 2 ainsi qu'un écart type supérieur à 1. Ceux qui nous fait penser à une pas très grande diversité ce qui est tout à fait normal sur un jeu de 5 valeurs.
+
+```{r setup6, include=TRUE}
+
+mean(films$view, na.rm = TRUE)
+min(films$view, na.rm = TRUE)
+max(films$view, na.rm = TRUE)
+median(films$view, na.rm = TRUE)
+var(films$view, na.rm = TRUE)
+sd(films$view, na.rm = TRUE)
+
+```
+
+Nous retrouvons ici toutes les statistiques intéressantes pour analyser la colonne view. On y retrouve donc la moyenne qui est de  496832.7 on comprend donc qu'il y a en moyenne plus 400000 vues sur un de film il n'y a pas beaucoup de valeurs extrêmes car on retrouve une médiane proche de la moyenne : 493855. On retrouve bien sûr le min et le max qui sont de 72 pour le minimum et de 999907 pour le maximum.
+
+Nous trouvons ensuite la variance qui est éguale à 83283466505 ainsi qu'un écart type supérieur à 288588.7.
+
+```{r setup7, include=TRUE}
+
+table(x = films$marks)
+
+```
+
+J'ai créé ensuite un trie à plat de la colonne Marks et j'ai décidé de le visualiser :
+
+```{r setup8, include=TRUE}
+
+tab <- table( x = films$marks )
+barplot(height = tab, col="deepskyblue" ,
+        main = "Repartition du nombre des notes des films et des séries", las= 1,
+        xlab="Notes des films/séries", ylab="Effectifs")
+
+```
+
+Nous apercevons ici un graphique qui reprend les valeurs de notre trie à plat fait plus haut. On remarque que les notes les moins misent sont les extrêmes c'est-à-dire 0 et 5, on comprend donc que les personnes préfèrent mettre une note un peu moins prononcer car un film ne peut être rarement dans les extrêmes.
+
+#Analyse Bivariées.
+ 
+```{r setup9, include=TRUE}
+
+b = films[order(films$view, decreasing = TRUE),]
+filtre = b[c(1:10),]
+
+ggplot(filtre, aes(x=title, y=view)) + 
+      geom_bar(stat = "identity") +
+      coord_flip() + ggtitle("Vues par film") + labs(x = "Titre", y ="Vues")
+    
+
+```
+Grâce à ce graphique on remarque de nombreux films atteind le million de vu. On constate aussi qu'aucun film les dépasse cela nous prouve que la base de donnée ne recueillit pas le nombreux de vu supérieur à un million.
+ 
+```{r setup10, include=TRUE}
+
+b = films[order(films$marks, decreasing = TRUE),]
+filtre = b[c(1:10),]
+
+ggplot(filtre, aes(x=title, y=marks)) + 
+      geom_bar(stat = "identity") +
+      coord_flip() + ggtitle("Notes par film") + labs(x = "Titre", y ="Notes")
+
+```
+Et enfin pour finir on remarque tout comme le graphique précédent qu'il y a beaucoup de films notés avec la note maximum qui est de 5. Il est donc compliqué d'y comparer avec les films les plus vus. 
+
+C'est pour cela que j'ai décidé de calculer directement un v de cramer :
+
+```{r setup11, include=TRUE}
+
+x<-rnorm(films$marks,mean=2.498922,sd=1.501824)
+y<-rnorm(films$view,mean=496832.7,sd=288588.7)
+cramer.test(x,y)
+
+```
+On comprend donc que le lien n'est pas très fort, cela nous prouve que les films les plus e sont pas tout le temps les mieux notés. Mais les deux variables restes tout de même liés cela veut donc dire que certains films sont à la fois bien noté et vu de nombreuses fois.
