@@ -15,6 +15,7 @@ Modifier les valeurs d'import des données, on va maintenant utiliser le package
 - db <- dbConnect(SQLite(), db = "database.db")
 - df <- dbGetQuery(db, "SELECT * FROM Films INNER JOIN Rating ON Films.id_rating = Rating.id_rating INNER JOIN liste ON Films.id_listed_in = liste.id_listed_in")
 
+
 La premère permet de connecter la base de données et d'enregistrer les valeurs dans un dataframe, la deuxième va effectuer une jointure pour lier les 3 fichiers.
 
 Vous trouverez dans rshiny/database/files/ les fichiers server.R et ui.R avec le code sql.
