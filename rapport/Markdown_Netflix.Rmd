@@ -23,18 +23,18 @@ library(cramer)
 ## Présentation du jeu de donné.
 je vais donc avant tous vous présentez mon jeu de donné.
 
-Notre jeu de donné est basé sur des données Netflix. Nous avons décomposé ces données en trois tables différentes.
+Notre jeu de données est basé sur des données Netflix. Nous avons décomposé ces données en trois tables différentes.
 
 La table Films où on retrouve toutes les infos sur les films du catalogue Netflix comme :
 -title : titre des films 
 -film_id : l'id de chaque film 
--type : si c'est un film ou une série (TV show) on retrouve dans cet attribut deux valeurs faussées : une vide et une noté "William Wyler". 
+-type : si c'est un film ou une série (TV show) on retrouve dans cet attribut deux valeurs faussées : une vide et une notée "William Wyler". 
 -director : le nom des directeurs des films 
 -cast : le casting du film
--country : le pays d'où viens le film
+-country : le pays d'où vient le film
 -date_added : la date ou le films a été ajouté au catalogue Netflix -release_years : l'année de sortie du film 
 -duration : la durée du film/ nombre de saison pour les séries -marks : la note du film
--view : le nombre de vu de chaque film 
+-view : le nombre de vues de chaque film 
 -Deux clés étrangères l'id rating ainsi que l'id de listed in.
 
 La table Rating, qui est composée de deux attributs: 
@@ -47,7 +47,7 @@ Mais il existe d'autres rating moins connu comme :
 -G (Un film classé G, signifie qu'il est pour tous les âges.)
 -NC-17 (la note la plus élevée du système de classification des films, conseillé fortement pour les adultes) puis nous y retrouvons des rating qui n'ont pas de sens comme des durées ou encore UR qui est un rating d'URL et non de film nous avons tout de même décidé de ne pas modifier le fichier et donc de garder ces valeurs incohérentes.
 
-Et enfin la table liste ou on y retrouve : les différents thèmes ansi que leurs id correspondant.
+Et enfin la table liste ou on y retrouve : les différents thèmes ainsi que leurs id correspondant.
 
 Pour vous expliquer les liens de nos tables voici un mcd de notre BDD: (modifier le lien avec l'emplacement du mcd)
 
@@ -59,8 +59,8 @@ knitr::include_graphics("C:/Users/Lucas/OneDrive/Bureau/Projet Shiny/mcd netflix
 
 On peut donc bien mieux comprendre comment fonctionne notre MCD avec une table assez imposante "Films" qui est donc liée à la table rating et liste. On comprend donc que leur lien est fait grâce à leur id: 
 
-un film n'a qu'un seul rating et un rating peut avoir plusieur films
-un film n'a qu'un thème alors qu'un thème peut avoir plusieur films
+un film n'a qu'un seul rating et un rating peut avoir plusieurs films
+un film n'a qu'un thème alors qu'un thème peut avoir plusieurs films
 
 ```{r setup2, include=TRUE}
 
@@ -72,7 +72,7 @@ colnames(x = films)
 ```
 
 On retrouve ici toutes les informations concernant la table film.
-je vais me concentrer sur les attributs view et marks car ils sont directement liés à la problématique. Donc on comprend bien que ces deux attributs sont des entier "int". On retrouve d'ailleurs de nombreuses analyses faite sur leur chiffre mais nous en parlerons un peu plus tard.
+je vais me concentrer sur les attributs view et marks car ils sont directement liés à la problématique. Donc on comprend bien que ces deux attributs sont des entiers "int". On retrouve d'ailleurs de nombreuses analyses faite sur leur chiffre mais nous en parlerons un peu plus tard.
 
 ```{r setup3, include=TRUE}
 
@@ -141,7 +141,7 @@ table(x = films$marks)
 
 ```
 
-J'ai créé ensuite un trie à plat de la colonne Marks et j'ai décidé de le visualiser :
+J'ai créé ensuite un tri à plat de la colonne Marks et j'ai décidé de le visualiser :
 
 ```{r setup8, include=TRUE}
 
@@ -167,7 +167,7 @@ ggplot(filtre, aes(x=title, y=view)) +
     
 
 ```
-Grâce à ce graphique on remarque de nombreux films atteind le million de vu. On constate aussi qu'aucun film les dépasse cela nous prouve que la base de donnée ne recueillit pas le nombreux de vu supérieur à un million.
+Grâce à ce graphique on remarque que de nombreux films ont atteint le million de vues. On constate aussi qu'aucun film les dépasse, cela nous prouve que la base de données ne recueillit pas le nombreux de vu supérieur à un million.
  
 ```{r setup10, include=TRUE}
 
