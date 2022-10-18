@@ -53,7 +53,7 @@ Pour vous expliquer les liens de nos tables voici un mcd de notre BDD: (modifier
 
 ```{r setup1, include=TRUE}
 
-knitr::include_graphics("C:/Users/Lucas/OneDrive/Bureau/Projet Shiny/mcd netflix.PNG")
+knitr::include_graphics("MCD.PNG")
 
 ```
 
