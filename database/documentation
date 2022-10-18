@@ -1,1 +1,13 @@
+Pour utiliser le base de données il vous faut d'abord vous connecter à la base de données.
 
+Télécharger SQLite via ce lien : https://sqlitebrowser.org/dl/
+
+Une fois cela fait, ouvrer le logiciel et cliquez en haut à droite sur Fichier -> Importer -> Table depuis un fichier CSV.
+
+Séléctionner ensuite un des 3 fichiers CSV à disposition, en séparateur de champ vous devez spécifier ";" et cocher la case "Nom des Colonnes en 1ère ligne".
+
+Faites de même pour les 2 autres tables.
+
+Vous avez maintenant les 3 tables, vous pouvez enregistrer ce fichier en "database.db" ou prendre directement le fichier dans rshiny/database/files/database.db.
+
+Télécharger le code du 
